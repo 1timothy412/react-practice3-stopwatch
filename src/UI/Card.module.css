@@ -1,0 +1,13 @@
+body {
+    font-family: sans-serif;
+}
+
+.default {
+    margin: 1rem auto;
+    padding: 1rem;
+    max-width: 40rem;
+    border: 0.1rem solid black;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+
+}
