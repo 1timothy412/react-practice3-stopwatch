@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useState} from "react";
+import {Fragment, useEffect, useReducer, useState} from "react";
 import Card from "../../UI/Card";
 import styles from './StopWatch.module.css'
 
@@ -14,14 +14,52 @@ const StopWatch = (stopWatchProps) => {
     const [hour, setHour] = useState(stopWatch.hour)
     const [minute, setMinute] = useState(stopWatch.minute)
     const [second, setSecond] = useState(stopWatch.second)
-    const [isActivated, setIsActivated] = useState(false)
-    const [disableRun, setDisableRun] = useState(false)
-    const [disablePause, setDisablePause] = useState(true)
-    const [disableReset, setDisableReset] = useState(true)
+    // const [isActivated, setIsActivated] = useState(false)
+    // const [disableRun, setDisableRun] = useState(false)
+    // const [disablePause, setDisablePause] = useState(true)
+    // const [disableReset, setDisableReset] = useState(true)
+
+    function controlReducer(prevControl, action) {
+
+        if (action.type === 'pause') {
+            return {
+                activateWatch: false,
+                pauseWatch: true,
+                runWatch: false,
+                resetWatch: false
+            }
+        }
+        if (action.type === 'reset') {
+            return {
+                activateWatch: false,
+                pauseWatch: true,
+                runWatch: false,
+                resetWatch: true
+            }
+        }
+        if (action.type === 'run') {
+            return {
+                activateWatch: true,
+                pauseWatch: false,
+                runWatch: true,
+                resetWatch: false
+            }
+        }
+
+    }
+
+    const [control, controlAction] = useReducer(
+        controlReducer,
+        {
+            activateWatch: false,
+            runWatch: false,
+            pauseWatch: false,
+            resetWatch: false
+        })
 
     useEffect(() => {
         let runningInterval = null
-        if (isActivated) {
+        if (control.activateWatch) {
             console.log('Stopwatch is running')
             runningInterval = setTimeout(() => {
                 setSecond(prevState => {
@@ -46,20 +84,25 @@ const StopWatch = (stopWatchProps) => {
 
         }
         console.log('second running')
-        console.log(isActivated)
+        console.log(control.activateWatch)
         return () => {
             console.log('clearTimeout running')
             clearTimeout(runningInterval)
         }
 
-    }, [second, isActivated])
+    }, [second, control.activateWatch])
 
 
     function pauseTimerHandler() {
-        setIsActivated(!isActivated)
-        setDisablePause(true)
-        setDisableRun(false)
-        setDisableReset(false)
+        // setIsActivated(!isActivated)
+        controlAction(
+            {
+                type: 'pause'
+            }
+        )
+        // setDisablePause(true)
+        // setDisableRun(false)
+        // setDisableReset(false)
         console.log(stopWatch.title)
 
     }
@@ -68,19 +111,29 @@ const StopWatch = (stopWatchProps) => {
         setSecond(0);
         setMinute(0);
         setHour(0);
-        setIsActivated(false)
-        setDisableRun(false)
-        setDisablePause(true)
-        setDisableReset(true)
+        // setIsActivated(false)
+        controlAction(
+            {
+                type: 'reset'
+            }
+        )
+        // setDisableRun(false)
+        // setDisablePause(true)
+        // setDisableReset(true)
         console.log(stopWatch.title)
 
     }
 
     function runTimerHandler() {
-        setIsActivated(true)
-        setDisableRun(true)
-        setDisablePause(false)
-        setDisableReset(false)
+        // setIsActivated(true)
+        controlAction(
+            {
+                type: 'run'
+            }
+        )
+        // setDisableRun(true)
+        // setDisablePause(false)
+        // setDisableReset(false)
         console.log(stopWatch.title)
 
 
@@ -88,11 +141,11 @@ const StopWatch = (stopWatchProps) => {
 
     return (
         <Card className={styles.default}>
-                <h3 style={{color: "blue"}}>{stopWatch.title}</h3>
-                <h3> {hour}h : {minute}m : {second}s</h3>
-                <button type='button' onClick={runTimerHandler} disabled={disableRun}>Run</button>
-                <button type='button' onClick={pauseTimerHandler} disabled={disablePause}>Pause</button>
-                <button type='button' onClick={resetTimerHandler} disabled={disableReset}>Reset</button>
+            <h3 style={{color: "blue"}}>{stopWatch.title}</h3>
+            <h3> {hour}h : {minute}m : {second}s</h3>
+            <button type='button' onClick={runTimerHandler} disabled={control.runWatch}>Run</button>
+            <button type='button' onClick={pauseTimerHandler} disabled={control.pauseWatch}>Pause</button>
+            <button type='button' onClick={resetTimerHandler} disabled={control.resetWatch}>Reset</button>
         </Card>
     )
 }
