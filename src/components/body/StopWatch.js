@@ -74,12 +74,14 @@ const StopWatch = (stopWatchProps) => {
                 setMinute(prevState => {
                     return prevState + 1
                 })
-                if (minute > 59) {
-                    console.log('Reset minute timer')
-                    setHour(prevState => {
-                        return prevState + 1
-                    })
-                }
+
+            }
+            if (minute > 59) {
+                console.log('Reset minute timer')
+                setMinute(0)
+                setHour(prevState => {
+                    return prevState + 1
+                })
             }
 
         }
